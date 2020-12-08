@@ -1,25 +1,31 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import Card from "./Card";
+import Search from "./Search";
+// import { parse, format } from "input-format";
 
-function App() {
+const initialCode = localStorage.code || "";
+let initialOptions;
+
+try {
+  initialOptions = JSON.parse(localStorage.options) || [];
+} catch (e) {
+  initialOptions = [];
+}
+
+const App = () => {
+  const [code, setCode] = useState(initialCode);
+  const [options, setOptions] = useState(initialOptions);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="container">
+      <Search setOptions={setOptions} code={code} setCode={setCode} />
+      <div>
+        {options.map((el, index) => {
+          return <Card key={index}>{el}</Card>;
+        })}
+      </div>
     </div>
   );
-}
+};
 
 export default App;
