@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { decoder } from "./decoder";
+import { decoder, mergeCode } from "./decoder";
 
 import { templateFormatter } from "input-format";
 const TEMPLATE = "xxx-xxx-xx";
@@ -10,6 +10,7 @@ const format = templateFormatter(TEMPLATE);
 const Container = styled.div`
   display: flex;
   width: 100%;
+  flex-direction: column;
 `;
 const StyledInput = styled.input`
   padding: 6px;
@@ -17,7 +18,16 @@ const StyledInput = styled.input`
   width: 100%;
 `;
 
-const Search = ({ code, setCode, setOptions }) => {
+const Flex = styled.div`
+  display: flex;
+  width: 100%;
+  button {
+    width: 100%;
+    padding: 10px;
+  }
+`;
+
+const Search = ({ code, setCode, code2, setCode2, setOptions }) => {
   return (
     <Container>
       <StyledInput
@@ -27,30 +37,44 @@ const Search = ({ code, setCode, setOptions }) => {
           setCode(e.target.value);
           localStorage.setItem("code", e.target.value);
         }}
-        placeholder="Enter code"
+        placeholder="Enter code #1"
       />
-      <button
-        onClick={(e) => {
-          e.preventDefault();
-          let decodedValues = decoder(code).map((el) => format(el).text);
-          setOptions(decodedValues);
-          localStorage.setItem("options", JSON.stringify(decodedValues));
+      <StyledInput
+        value={code2}
+        type="text"
+        onChange={(e) => {
+          setCode2(e.target.value);
+          localStorage.setItem("code2", e.target.value);
         }}
-        className="btn"
-      >
-        DECODE
-      </button>
-      <button
-        onClick={(e) => {
-          setCode("");
-          setOptions([]);
-          localStorage.setItem("options", []);
-          localStorage.setItem("code", "");
-        }}
-        className="btn"
-      >
-        RESET
-      </button>
+        placeholder="Enter code #2"
+      />
+      <Flex>
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            const mergedCode = mergeCode(code, code2) || code;
+            const decodedValues = decoder(mergedCode).map(
+              (el) => format(el).text
+            );
+            setOptions(decodedValues);
+            localStorage.setItem("options", JSON.stringify(decodedValues));
+          }}
+          className="btn"
+        >
+          DECODE
+        </button>
+        <button
+          onClick={(e) => {
+            setCode("");
+            setOptions([]);
+            localStorage.setItem("options", []);
+            localStorage.setItem("code", "");
+          }}
+          className="btn"
+        >
+          RESET
+        </button>
+      </Flex>
     </Container>
   );
 };

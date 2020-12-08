@@ -26,3 +26,34 @@ export const decoder = (code) => {
   }
   return [...new Set(possiblies)];
 };
+
+export const mergeCode = (first, second) => {
+  const isKey = (key) => {
+    return key === "H" || key === "N" || key === "C";
+  };
+  const mapping = {};
+  if (first.length === second.length) {
+    for (let i = 0; i < first.length; i++) {
+      if (isKey(first[i]) !== isKey(second[i])) {
+        if (isKey(first[i])) {
+          mapping[first[i]] = second[i];
+        }
+        if (isKey(second[i])) {
+          mapping[second[i]] = first[i];
+        }
+      }
+    }
+    return first
+      .split("")
+      .map((char) => {
+        if (mapping[char]) {
+          return mapping[char];
+        } else {
+          return char;
+        }
+      })
+      .join("");
+  } else {
+    return null;
+  }
+};
